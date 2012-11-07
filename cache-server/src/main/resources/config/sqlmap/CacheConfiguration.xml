@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="CacheConfiguration">
+
+	<typeAlias alias="CacheConfiguration" type="com.dianping.cache.entity.CacheConfiguration"/>
+
+	<resultMap id="CacheConfigurationResult" class="CacheConfiguration">
+		<result column="CacheKey" property="cacheKey"/>
+		<result column="ClientClazz" property="clientClazz"/>
+		<result column="Servers" property="servers"/>
+		<result column="TranscoderClazz" property="transcoderClazz"/>
+	</resultMap>
+
+    <select id="findAll" resultMap="CacheConfigurationResult">
+    	<![CDATA[
+    		SELECT CacheKey, ClientClazz, Servers, TranscoderClazz
+    		FROM DP_CacheConfiguration
+    	]]>
+    </select>
+    
+    <select id="find" resultMap="CacheConfigurationResult" parameterClass="map">
+    	<![CDATA[
+    		SELECT CacheKey, ClientClazz, Servers, TranscoderClazz
+    		FROM DP_CacheConfiguration
+    		WHERE CacheKey=#key#
+    	]]>
+    </select>
+    
+    <insert id="create" parameterClass="map">
+    	<![CDATA[
+    		INSERT INTO DP_CacheConfiguration(CacheKey, ClientClazz, Servers, TranscoderClazz)
+    		VALUES(#cacheKey#, #clientClazz#, #servers#, #transcoderClazz#)
+    	]]>
+    </insert>
+    
+    <update id="update" parameterClass="map">
+    	<![CDATA[
+    		UPDATE DP_CacheConfiguration 
+    		SET ClientClazz = #clientClazz#, Servers = #servers#, TranscoderClazz = #transcoderClazz#
+    		WHERE CacheKey = #cacheKey#
+    	]]>
+    </update>
+    
+    <delete id="delete" parameterClass="map">
+    	<![CDATA[
+    		DELETE FROM DP_CacheConfiguration
+    		WHERE CacheKey = #key#
+    	]]>
+    </delete>
+    
+</sqlMap>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+
+	<!-- DefaultCache setting. -->
+	<defaultCache maxElementsInMemory="10000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="300" overflowToDisk="false" diskPersistent="false" />
+	<Cache name ="templateCache" maxElementsInMemory="50000" maxElementsOnDisk="10000000" memoryStoreEvictionPolicy="LRU" eternal="false"
+		timeToIdleSeconds="0" timeToLiveSeconds="300" overflowToDisk="true" diskPersistent="false" diskExpiryThreadIntervalSeconds="120"/>
+</ehcache>

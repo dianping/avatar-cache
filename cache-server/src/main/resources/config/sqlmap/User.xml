@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="User">
+	
+	<typeAlias alias="User" type="com.dianping.cache.entity.User" />
+	<typeAlias alias="Role" type="com.dianping.cache.entity.Role" />
+	<typeAlias alias="Resource" type="com.dianping.cache.entity.Resource" />
+	
+	<resultMap id="UserResult_Basic" class="User">
+		<result property="id" column="id" nullValue="0" />
+		<result property="name" column="name" nullValue="0" />
+		<result property="password" column="password" nullValue="" />
+		<result property="email" column="email" nullValue="" />
+		<result property="phone" column="phone" nullValue="" />
+		<result property="realName" column="real_name" nullValue="" />
+	</resultMap>
+	<resultMap id="UserResult" class="User" extends="UserResult_Basic">
+		<result property="roleList" column="id" select="User.selectRoleById" />
+	</resultMap>
+	<resultMap id="RoleResult_Basic" class="Role">
+		<result property="id" column="id" nullValue="0" />
+		<result property="name" column="name" nullValue="" />
+	</resultMap>
+	<resultMap id="RoleResult" class="Role" extends="RoleResult_Basic">
+		<result property="resourceList" column="id" select="User.selectResourceById" />
+	</resultMap>
+	<resultMap id="ResourceResult" class="Resource">
+		<result property="id" column="id" nullValue="0" />
+		<result property="name" column="name" nullValue="" />
+		<result property="des" column="des" nullValue="" />
+	</resultMap>
+	
+	<select id="getUser" resultMap="UserResult" parameterClass="map">
+    <![CDATA[
+    	select id,name,password,email,phone,real_name
+		from user where name=#name# or TRIM(LEADING '0' FROM name)=#name# or email=CONCAT(#name#, '@dianping.com')
+		limit 1
+    ]]>
+	</select>
+	<select id="selectRoleById" resultMap="RoleResult" parameterClass="int">
+    <![CDATA[
+    	select r.id,r.name from role r where r.id in
+    	(select role_id from user_role where user_id=#userId#)
+    ]]>
+	</select>
+	<select id="selectResourceById" resultMap="ResourceResult" parameterClass="int">
+      <![CDATA[
+    	 select r.id,r.name,r.des from resource r where r.id in
+    	(select resource_id from resource_role where role_id=#roleId#)
+    ]]>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,16 @@
+====version2.0.1====
+
+部署涉及资源：
+	1. 需要在hawk库中创建CacheOperationLog表
+	2. 需要在hawk库中创建权限相关数据，涉及资源包括
+			cache-config--------------------
+			cache-config-create
+			cache-config-update
+			cache-config-remove
+			cache-single-clear
+			cache-log--------------
+			cache-key-config-create
+			cache-key-config-update
+			cache-key-config-remove
+			cache-batch-clear
+			cache-operate-log

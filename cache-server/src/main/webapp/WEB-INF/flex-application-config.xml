@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:flex="http://www.springframework.org/schema/flex"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/flex
+           http://www.springframework.org/schema/flex/spring-flex-1.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+
+    <bean id="default-remoting-adapter" class="org.springframework.flex.core.ManageableComponentFactoryBean">
+    	<constructor-arg value="flex.messaging.services.remoting.adapters.JavaAdapter"/>
+    </bean>
+
+    <bean id="securityHelper" class="com.dianping.modules.spring.flex.SecurityHelper"/>
+
+	<bean id="customizedMessageInterceptor" class="com.dianping.modules.spring.flex.CustomizedMessageInterceptor"/>
+	
+    <!-- default all request(/*) is handled by messageBroker defined in /WEB-INF/flex/services-config.xml -->
+    <flex:message-broker>
+    	<flex:message-interceptor ref="customizedMessageInterceptor"/>
+        <flex:remoting-service default-adapter-id="default-remoting-adapter" default-channels="my-amf-secured"/>
+        <flex:secured>
+            <flex:secured-channel channel="my-amf-secured" access="ROLE_USER"/>
+        </flex:secured>
+    </flex:message-broker>
+
+    <flex:remoting-destination ref="securityHelper" channels="my-amf"/>
+
+    <flex:remoting-destination ref="cacheConfigurationService"/>
+    <flex:remoting-destination ref="cacheKeyConfigurationService"/>
+    <flex:remoting-destination ref="operationLogService"/>
+    <flex:remoting-destination ref="cacheManageWebService"/>
+    <flex:remoting-destination ref="serverGroupService"/>
+    <flex:remoting-destination ref="serviceMonitorService"/>
+
+</beans>

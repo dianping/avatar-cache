@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- ActiveMQ 连接工厂 -->
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${avatar-cache.activemq.url}" />
+		<property name="userName" value="${avatar-cache.activemq.username}" />
+		<property name="password" value="${avatar-cache.activemq.password}" />
+		<!--<property name="useAsyncSend" value="true" />-->
+		<!--<property name="producerWindowSize" value="1024000" />-->
+		<property name="sendTimeout" value="1500"/>
+	</bean>
+
+	<!-- Spring Caching 连接工厂 -->
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="connectionFactory" />
+		<property name="sessionCacheSize" value="10" />
+		<property name="reconnectOnException" value="true"/>
+		<property name="clientId">
+			<bean class="com.dianping.avatar.jms.support.JmsClientIdGenerator">
+				<constructor-arg index="0" value="${avatar-cache.activemq.clientId.prefix}"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="messageConverter" class="com.dianping.avatar.jms.support.InnerDestinationAwareMessageConverter" >
+		<constructor-arg index="0" value="com.dianping.remote.share.annotation.JmsMessageBody"></constructor-arg>
+	</bean>
+
+	<!-- Spring JMS Template -->
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="cachingConnectionFactory" />
+		<property name="messageConverter" ref="messageConverter" />
+		<property name="pubSubDomain" value="true"/>
+		<property name="timeToLive" value="600000"/>
+	</bean>
+
+	<!-- Queue定义 -->
+	<bean id="notifyQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${avatar-cache.activemq.cache.queue.name}" />
+	</bean>
+
+	<!-- Topic定义 -->
+	<bean id="notifyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="${avatar-cache.activemq.cache.topic.name}" />
+	</bean>
+
+	<!-- 使用Spring JmsTemplate的消息生产者 -->
+	<bean id="amqNotifyMessageProducer" class="com.dianping.cache.remote.jms.CacheMessageProducerAMQ" init-method="init">
+		<property name="jmsTemplate" ref="jmsTemplate" />
+		<property name="notifyQueue" ref="notifyQueue" />
+		<property name="notifyTopic" ref="notifyTopic" />
+		<property name="mailService" ref="mailService"/>
+	</bean>
+	
+	<bean id="converter" class="com.dianping.cache.remote.jms.convert.JDKObject2BytesConverter">
+	</bean>
+
+	<bean id="swallowNotifyMessageProducer" class="com.dianping.cache.remote.jms.CacheMessageProducerSwallow">
+		<property name="mongoUri" value="${avatar-cache.swallow.server}"/>
+		<property name="destination" value="com.dianping.cacheadmin"/>
+		<property name="type" value="topic"/>
+		<property name="object2BytesConverter" ref="converter"/>
+	</bean>
+	
+	<bean id="notifyMessageProducer" class="com.dianping.cache.remote.jms.CacheMessageProducer">
+		<property name="senders">
+			<list>
+				<ref bean="swallowNotifyMessageProducer"/>
+				<ref bean="amqNotifyMessageProducer"/>
+			</list>
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ServerGroup">
+
+	<typeAlias alias="ServerGroup" type="com.dianping.cache.entity.ServerGroup"/>
+
+	<resultMap id="ServerGroupResult" class="ServerGroup">
+		<result column="Group" property="group"/>
+		<result column="Servers" property="servers"/>
+		<result column="CreatedTime" property="createdTime"/>
+		<result column="UpdatedTime" property="updatedTime"/>
+	</resultMap>
+
+    <select id="findAll" resultMap="ServerGroupResult">
+    	<![CDATA[
+    		SELECT `Group`, Servers, CreatedTime, UpdatedTime
+    		FROM CacheServerGroup
+    	]]>
+    </select>
+    
+    <select id="find" resultMap="ServerGroupResult" parameterClass="map">
+    	<![CDATA[
+    		SELECT `Group`, Servers, CreatedTime, UpdatedTime
+    		FROM CacheServerGroup
+    		WHERE `Group`=#group#
+    	]]>
+    </select>
+    
+    <insert id="create" parameterClass="map">
+    	<![CDATA[
+    		INSERT INTO CacheServerGroup(`Group`, Servers, CreatedTime, UpdatedTime)
+    		VALUES(#group#, #servers#, #createdTime#, #updatedTime#)
+    	]]>
+    </insert>
+    
+    <update id="update" parameterClass="map">
+    	<![CDATA[
+    		UPDATE CacheServerGroup 
+    		SET Servers = #servers#, UpdatedTime = #updatedTime#
+    		WHERE `Group` = #group#
+    	]]>
+    </update>
+    
+    <delete id="delete" parameterClass="map">
+    	<![CDATA[
+    		DELETE FROM CacheServerGroup
+    		WHERE `Group` = #group#
+    	]]>
+    </delete>
+    
+</sqlMap>

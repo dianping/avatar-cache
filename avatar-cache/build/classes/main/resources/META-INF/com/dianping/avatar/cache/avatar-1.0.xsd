@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.dianping.com/schema/avatar" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.dianping.com/schema/avatar" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+
+	<xsd:element name="cache">
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[Specify cache service name]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+
+			<xsd:attribute name="config" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[
+							Cache configuration file location
+							Deprecated!(now retrieve config from remote cache server)
+						]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+
+			<xsd:attribute name="jms-url" type="xsd:string"  use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[jms url parameter]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			
+			<xsd:attribute name="jms-username" type="xsd:string"  use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[jms username]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			
+			<xsd:attribute name="jms-password" type="xsd:string"  use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[jms password]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+
+			<xsd:attribute name="topic-name" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						<![CDATA[jms topic name]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

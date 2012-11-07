@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="OperationLog">
+	
+	<typeAlias alias="OperationLog" type="com.dianping.cache.entity.OperationLog"/>
+	
+	<resultMap id="OperationLogResult" class="OperationLog">
+		<result column="ID" property="id"/>
+		<result column="Operator" property="operator"/>
+		<result column="OperateTime" property="operateTime"/>
+		<result column="Succeed" property="succeed"/>
+		<result column="Content" property="content"/>
+		<result column="IsCritical" property="critical"/>
+	</resultMap>
+	
+	<insert id="create" parameterClass="map">
+		<![CDATA[
+		INSERT INTO CacheOperationLog(Operator, OperateTime, Succeed, Content, IsCritical)
+		VALUES(#operator#, NOW(), #succeed#, #content#, #critical#)
+		]]>
+	</insert>
+	
+	<sql id="search_fragment">
+		<dynamic prepend="WHERE">
+   			<isNotEmpty prepend="AND" property="operator">
+   				Operator LIKE CONCAT('%', #operator#, '%')
+   			</isNotEmpty>
+   			<isNotNull prepend="AND" property="operateStart">
+   				<![CDATA[OperateTime >= #operateStart#]]>
+   			</isNotNull>
+   			<isNotNull prepend="AND" property="operateEnd">
+   				<![CDATA[OperateTime <= #operateEnd#]]>
+   			</isNotNull>
+   			<isNotEqual prepend="AND" property="succeed" compareValue="-1">
+   				Succeed = #succeed#
+   			</isNotEqual>
+   			<isNotEmpty prepend="AND" property="content">
+   				Content LIKE CONCAT('%', #content#, '%')
+   			</isNotEmpty>
+   			<isEqual prepend="AND" property="critical" compareValue="true">
+   				IsCritical = 1
+   			</isEqual>
+   		</dynamic>
+	</sql>
+	
+	<select id="paginate" resultMap="OperationLogResult" parameterClass="map">
+   		SELECT ID, Operator, OperateTime, Succeed, Content, IsCritical
+   		FROM CacheOperationLog
+   		<include refid="search_fragment"/>
+   		ORDER BY OperateTime DESC
+	</select>
+	
+	<select id="paginate_COUNT" resultClass="int" parameterClass="map">
+		select COUNT(1) 
+		FROM CacheOperationLog
+		<include refid="search_fragment"/>
+	</select>
+	
+	<delete id="delete" parameterClass="map">
+		<![CDATA[
+		DELETE FROM CacheOperationLog 
+   		WHERE OperateTime <= #before#
+		]]>
+	</delete>
+	
+</sqlMap>

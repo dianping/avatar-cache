@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!-- The DataSource configuration for Monthly star System -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"> 
+		<property name="jdbcUrl" value="${avatar-cache.jdbc.url}" />
+		<property name="user" value="${avatar-cache.jdbc.username}" /> 
+		<property name="password" value="${avatar-cache.jdbc.password}" /> 
+		<property name="driverClass" value="${avatar-cache.jdbc.driverClassName}" /> 
+		<property name="minPoolSize" value="${avatar-cache.c3p0.minSize}" /> 
+		<property name="maxPoolSize" value="${avatar-cache.c3p0.maxSize}" /> 
+		<property name="initialPoolSize" value="${avatar-cache.c3p0.initialSize}" /> 
+		<property name="idleConnectionTestPeriod" value="40" /> 
+		<property name="maxIdleTime" value="300" /> 
+		<property name="acquireRetryAttempts" value="10" /> 
+		<property name="acquireRetryDelay" value="500" /> 
+		<property name="checkoutTimeout" value="3000"/> 
+		<property name="maxStatements" value="0"/> 
+	</bean>
+	
+	<bean id="Hawk.dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"> 
+		<property name="jdbcUrl" value="${avatar-cache.hawk.jdbc.url}" />
+		<property name="user" value="${avatar-cache.hawk.jdbc.username}" /> 
+		<property name="password" value="${avatar-cache.hawk.jdbc.password}" /> 
+		<property name="driverClass" value="${avatar-cache.hawk.jdbc.driverClassName}" /> 
+		<property name="minPoolSize" value="${avatar-cache.hawk.c3p0.minSize}" /> 
+		<property name="maxPoolSize" value="${avatar-cache.hawk.c3p0.maxSize}" /> 
+		<property name="initialPoolSize" value="${avatar-cache.hawk.c3p0.initialSize}" /> 
+		<property name="idleConnectionTestPeriod" value="40" /> 
+		<property name="maxIdleTime" value="300" /> 
+		<property name="acquireRetryAttempts" value="10" /> 
+		<property name="acquireRetryDelay" value="500" /> 
+		<property name="checkoutTimeout" value="3000"/> 
+		<property name="maxStatements" value="0"/> 
+	</bean>
+
+	<!-- The SqlMapClient configuration for avatar-based System -->
+	<bean id="sqlMapClient" class="com.dianping.avatar.dao.ibatis.spring.LimitSqlMapClientFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/config/sqlmap/sqlmap-config.xml" />
+		<property name="sqlConvert" ref="mysqlConverter"/>
+	</bean>
+	
+	<bean id="Hawk.sqlMapClient" class="com.dianping.avatar.dao.ibatis.spring.LimitSqlMapClientFactoryBean">
+		<property name="dataSource" ref="Hawk.dataSource" />
+		<property name="configLocation" value="classpath:/config/sqlmap/hawk-sqlmap-config.xml" />
+		<property name="sqlConvert" ref="mysqlConverter"/>
+	</bean>
+	
+	<bean id="mysqlConverter" class="com.dianping.avatar.dao.ibatis.MySqlConverter" />
+	
+	<bean id="daoRealizeTarget" class="com.dianping.avatar.dao.ibatis.IBatisGenericDaoImpl" abstract="true">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+	
+	<bean id="Hawk.daoRealizeTarget" class="com.dianping.avatar.dao.ibatis.IBatisGenericDaoImpl" abstract="true">
+		<property name="sqlMapClient" ref="Hawk.sqlMapClient" />
+	</bean>
+
+</beans>

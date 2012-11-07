@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+
+    <http auto-config="true" session-fixation-protection="none"/>
+
+    <beans:bean id="authenticationProvider" class="com.dianping.cache.security.CustomizedAuthenticationProvider">
+    	<custom-authentication-provider/>
+    	<beans:property name="userDetailsService" ref="userDetailsService"/>
+    	<beans:property name="userService" ref="userService"/>
+    	<beans:property name="passwordEncoder">
+    		<beans:bean class="org.springframework.security.providers.encoding.MessageDigestPasswordEncoder">
+    			<beans:constructor-arg value="MD5"/>
+    		</beans:bean>
+    	</beans:property>
+    </beans:bean>
+    
+    <beans:bean id="userDetailsService" class="com.dianping.cache.security.CustomizedUserDetailsService">
+    	<beans:property name="userService" ref="userService"/>
+    	<beans:property name="superName" value="${avatar-cache.user.superName}"/>
+    	<beans:property name="superPass" value="${avatar-cache.user.superPass}"/>
+    </beans:bean>
+
+</beans:beans>

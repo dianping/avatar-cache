@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="CacheKeyConfiguration">
+
+	<typeAlias alias="CacheKeyConfiguration" type="com.dianping.cache.entity.CacheKeyConfiguration" />
+
+	<resultMap id="CacheKeyConfigurationResult" class="CacheKeyConfiguration">
+		<result column="Category" property="category" />
+		<result column="Duration" property="duration" />
+		<result column="IndexTemplate" property="indexTemplate" />
+		<result column="IndexDesc" property="indexDesc" />
+		<result column="CacheType" property="cacheType" />
+		<result column="Version" property="version" />
+		<result column="SyncDNet" property="sync2Dnet" />
+		<result column="IsHot" property="hot" />
+	</resultMap>
+
+	<select id="findAll" resultMap="CacheKeyConfigurationResult">
+    	<![CDATA[
+    		SELECT Category, Duration, IndexTemplate, IndexDesc, CacheType, Version, SyncDNet, IsHot
+    		FROM DP_CacheKeyConfiguration
+    	]]>
+	</select>
+
+	<select id="find" parameterClass="map" resultMap="CacheKeyConfigurationResult">
+		<![CDATA[
+		SELECT Category, Duration, IndexTemplate, IndexDesc, CacheType, Version, SyncDNet, IsHot
+		FROM DP_CacheKeyConfiguration
+		WHERE Category = #category#
+		LIMIT 1
+		]]>
+	</select>
+
+	<update id="incVersion" parameterClass="map">
+    	<![CDATA[
+    		UPDATE DP_CacheKeyConfiguration
+			SET VERSION = VERSION + 1
+			WHERE Category = #category#
+    	]]>
+	</update>
+
+	<select id="loadVersion" parameterClass="map" resultClass="string">
+		<![CDATA[
+		SELECT VERSION
+		FROM DP_CacheKeyConfiguration
+		WHERE Category = #category#
+		LIMIT 1
+		]]>
+	</select>
+	
+	<insert id="create" parameterClass="map">
+		<![CDATA[
+		INSERT INTO DP_CacheKeyConfiguration(Category, Duration, IndexTemplate, IndexDesc, CacheType, Version, SyncDNet, IsHot)
+		VALUES(#category#, #duration#, #indexTemplate#, #indexDesc#, #cacheType#, #version#, #sync2Dnet#, #hot#)
+		]]>
+	</insert>
+	
+	<update id="update" parameterClass="map">
+		<![CDATA[
+		UPDATE DP_CacheKeyConfiguration 
+   		SET Duration = #duration#, IndexTemplate = #indexTemplate#, IndexDesc = #indexDesc#, CacheType = #cacheType#, SyncDNet = #sync2Dnet#,
+   			IsHot = #hot#
+   		WHERE Category = #category#
+		]]>
+	</update>
+	
+	<delete id="delete" parameterClass="map">
+		<![CDATA[
+		DELETE FROM DP_CacheKeyConfiguration 
+   		WHERE Category = #category#
+		]]>
+	</delete>
+	
+	<select id="paginate" resultMap="CacheKeyConfigurationResult" parameterClass="map">
+   		SELECT Category, Duration, IndexTemplate, IndexDesc, CacheType, Version, SyncDNet, IsHot
+   		FROM DP_CacheKeyConfiguration
+   		<dynamic prepend="WHERE">
+   			<isNotEmpty prepend="AND" property="category">
+   				Category LIKE CONCAT('%', #category#, '%')
+   			</isNotEmpty>
+   			<isNotEmpty prepend="AND" property="cacheType">
+   				CacheType = #cacheType#
+   			</isNotEmpty>
+   		</dynamic>
+   		<isNotNull property="sortField">
+   			ORDER BY $sortField$ $sortAsc$
+   		</isNotNull>
+	</select>
+	
+	<select id="paginate_COUNT" resultClass="int" parameterClass="map">
+		select COUNT(1) 
+		FROM DP_CacheKeyConfiguration
+		<dynamic prepend="WHERE">
+   			<isNotEmpty prepend="AND" property="category">
+   				Category LIKE CONCAT('%', #category#, '%')
+   			</isNotEmpty>
+   			<isNotEmpty prepend="AND" property="cacheType">
+   				CacheType = #cacheType#
+   			</isNotEmpty>
+   		</dynamic>
+	</select>
+
+</sqlMap>

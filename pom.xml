@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!--Extend the pom from Top -->
+	<parent>
+		<groupId>com.dianping</groupId>
+		<artifactId>dianping-parent</artifactId>
+		<version>2.0.0</version>
+	</parent>
+	<artifactId>avatar-cache-parent</artifactId>
+	<version>2.3.0</version>
+	<packaging>pom</packaging>
+	<name>Avatar cache parent</name>
+	<url>http://maven.apache.org</url>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>cache-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>cache-builder</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>avatar-cache-remote</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dianping</groupId>
+				<artifactId>avatar-common-remote</artifactId>
+				<version>2.0.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dianping</groupId>
+				<artifactId>avatar-logger</artifactId>
+				<version>2.2.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.dianping</groupId>
+				<artifactId>avatar-tracker</artifactId>
+				<version>2.2.4</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.spy</groupId>
+			<artifactId>memcached</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.spy</groupId>
+			<artifactId>spy</artifactId>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<module>cache-core</module>
+		<module>cache-builder</module>
+		<module>cache-server</module>
+		<module>avatar-cache</module>
+		<module>avatar-cache-remote</module>
+	</modules>
+</project>

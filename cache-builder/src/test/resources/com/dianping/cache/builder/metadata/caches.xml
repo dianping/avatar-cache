@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<caches>
+	<cache key="memcached" clientClass="com.dianping.cache.memcached.MemcachedClientImpl"
+		metadataClass="com.dianping.cache.builder.metadata.MemcachedMetadataParser">
+		<server address="192.168.8.45" port="11211" />
+	</cache>
+	<cache key="kvdb" clientClass="com.dianping.cache.memcached.MemcachedClientImpl"
+		metadataClass="com.dianping.cache.builder.metadata.MemcachedMetadataParser"
+		transcoder="com.dianping.cache.memcached.StringTranscoder">
+		<server address="192.168.8.45" port="11211" />
+	</cache>
+</caches>

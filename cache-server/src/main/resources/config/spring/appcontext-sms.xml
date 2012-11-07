@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+		http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd ">
+		
+	<bean id="serverFactory" class="com.mongodb.MongoServerFactory">
+		<property name="server" value="${avatar-cache.sms.server}"/>
+		<property name="optionsExt">
+			<bean class="com.mongodb.MongoOptionsExt">
+				<property name="socketTimeout" value="2500"/>
+				<property name="connectTimeout" value="2500"/>
+				<property name="connectionsPerHost" value="20"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="smsMessageSender" class="com.dianping.queue.SimpleQueueService">
+		<constructor-arg ref="serverFactory"/>
+		<constructor-arg value="${avatar-cache.sms.queue.ToDotNet}"/>
+	</bean>
+	
+	<bean id="smsMessageReceiver" class="com.dianping.queue.SimpleQueueService">
+		<constructor-arg ref="serverFactory"/>
+		<constructor-arg value="${avatar-cache.sms.queue.FromDotNet}"/>
+	</bean>
+	
+	<bean class="com.dianping.queue.listener.SimpleMessageListenerContainer" init-method="initialize">
+		<property name="queueService" ref="smsMessageReceiver"/>
+		<property name="messageListener" ref="cleanCacheConsumer"/>
+	</bean>
+	
+	<bean id="cleanCacheConsumer" class="com.dianping.cache.remote.sms.CacheCleanFromDotNetConsumer">
+		<property name="cacheConfigurationService" ref="cacheConfigurationService"/>
+		<property name="cacheKeyConfigurationService" ref="cacheKeyConfigurationService"/>
+	</bean>
+	
+</beans>

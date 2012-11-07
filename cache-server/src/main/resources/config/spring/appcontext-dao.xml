@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+		http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd ">
+		
+	<bean id="daoAutoRealizer" class="com.dianping.avatar.dao.DAOAutoRealizer" />
+	
+	<bean id="daoAutoRealizerAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+		<property name="advice" ref="daoAutoRealizer" />
+		<property name="expression" value="execution(* com.dianping..dao.*.*(..)) and !execution(* com.dianping.avatar..dao.*.*(..))" />
+	</bean>
+	
+	<bean id="Hawk.daoAutoRealizerAdvisor" class="org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor">
+		<property name="advice" ref="daoAutoRealizer" />
+		<property name="expression" value="execution(* com.dianping..dao.*.*(..)) and !execution(* com.dianping.avatar..dao.*.*(..))" />
+	</bean>
+		
+	<bean id="parentDao" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>daoAutoRealizerAdvisor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="Hawk.parentDao" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>Hawk.daoAutoRealizerAdvisor</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cacheConfigurationDao" parent="parentDao">
+		<property name="proxyInterfaces" value="com.dianping.cache.dao.CacheConfigurationDao"/>
+		<property name="target">
+			<bean parent="daoRealizeTarget">
+				<constructor-arg value="CacheConfiguration" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="cacheKeyConfigurationDao" parent="parentDao">
+		<property name="proxyInterfaces" value="com.dianping.cache.dao.CacheKeyConfigurationDao"/>
+		<property name="target">
+			<bean parent="daoRealizeTarget">
+				<constructor-arg value="CacheKeyConfiguration" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="operationLogDao" parent="Hawk.parentDao">
+		<property name="proxyInterfaces" value="com.dianping.cache.dao.OperationLogDao"/>
+		<property name="target">
+			<bean parent="Hawk.daoRealizeTarget">
+				<constructor-arg value="OperationLog" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="userDao" parent="Hawk.parentDao">
+		<property name="proxyInterfaces" value="com.dianping.cache.dao.UserDao"/>
+		<property name="target">
+			<bean parent="Hawk.daoRealizeTarget">
+				<constructor-arg value="User" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="serverGroupDao" parent="Hawk.parentDao">
+		<property name="proxyInterfaces" value="com.dianping.cache.dao.ServerGroupDao"/>
+		<property name="target">
+			<bean parent="Hawk.daoRealizeTarget">
+				<constructor-arg value="ServerGroup" />
+			</bean>
+		</property>
+	</bean>
+
+</beans>
