@@ -62,3 +62,4 @@ Thumbs.db
 # temp folder #
 ######################
 target/
+build/
