@@ -90,6 +90,11 @@ public interface CacheService {
 	 * Retrieve cached items with keys cached by the specified CacheKey
 	 */
 	<T> List<T> mGet(List<CacheKey> keys);
+	
+	/**
+     * Retrieve cached items with keys cached by the specified CacheKey
+     */
+    <T> Map<CacheKey, T> mGetWithNonExists(List<CacheKey> keys);
 
 	/**
 	 * Retrieve cached items with specified simple keys

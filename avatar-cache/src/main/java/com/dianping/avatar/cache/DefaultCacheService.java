@@ -235,4 +235,14 @@ public class DefaultCacheService implements CacheService {
 			return returnValueIfError;
 		}
 	}
+
+    @Override
+    public <T> Map<CacheKey, T> mGetWithNonExists(final List<CacheKey> keys) {
+        return executeWithNoError(new Command() {
+            @Override
+            public Object execute() throws Exception {
+                return container.mGetWithNonExists(keys);
+            }
+        }, null, "MGet entities by cachekeys failed.");
+    }
 }

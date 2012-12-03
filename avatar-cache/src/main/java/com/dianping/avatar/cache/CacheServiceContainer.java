@@ -478,4 +478,55 @@ public class CacheServiceContainer {
 		this.defaultCacheType = defaultCacheType;
 	}
 
+    @SuppressWarnings("unchecked")
+    public <T> Map<CacheKey, T> mGetWithNonExists(List<CacheKey> keys) {
+        if (keys == null) {
+            throw new IllegalArgumentException("Parameter keys is null.");
+        }
+
+        if (keys.isEmpty()) {
+            return Collections.EMPTY_MAP;
+        }
+
+        final List<String> finalKeys = new ArrayList<String>();
+        final Map<String, String> categories = new HashMap<String, String>();
+        final Map<String, CacheKey> finalKeyCacheKeyMapping = new HashMap<String, CacheKey>();
+
+        CacheKeyType cacheKeyType = getCacheKeyMetadata(keys.get(0));
+        String cacheType = cacheKeyType.getCacheType();
+        String category = keys.get(0).getCategory();
+
+        Transaction t = Cat.getProducer().newTransaction("Cache." + cacheType, category + ":mGet");
+        t.setStatus(Message.SUCCESS);
+        try {
+
+            for (CacheKey key : keys) {
+                String finalKey = cacheKeyType.getKey(key.getParams());
+                finalKeys.add(finalKey);
+                categories.put(finalKey, cacheKeyType.getCategory());
+                finalKeyCacheKeyMapping.put(finalKey, key);
+            }
+
+            CacheClient cacheClient = getCacheClient(cacheKeyType.getCacheType());
+            long begin = System.nanoTime();
+            Map<String, T> cachedDataMap = cacheClient.getBulk(finalKeys, categories);
+            long end = System.nanoTime();
+            cacheTracker.addGetInfo(
+                    cacheKeyType.getCategory() + "[mget(" + keys.size() + ")-" + cacheKeyType.getCacheType() + "]", end
+                            - begin);
+            t.setStatus(Message.SUCCESS);
+            Map<CacheKey, T> res = new HashMap<CacheKey, T>();
+            for (String finalKey : finalKeys) {
+                res.put(finalKeyCacheKeyMapping.get(finalKey), cachedDataMap.get(finalKey));
+            }
+            return res;
+        } catch (RuntimeException e) {
+            t.setStatus(e);
+            Cat.getProducer().logError(e);
+            throw e;
+        } finally {
+            t.complete();
+        }
+    }
+
 }
