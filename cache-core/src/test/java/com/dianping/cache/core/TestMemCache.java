@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -36,9 +36,10 @@ import com.dianping.cache.memcached.MemcachedClientConfiguration;
  */
 public class TestMemCache {
 
-    private CacheClient client;
+    private static CacheClient client;
 
     private final String key = "memcached_key 3";
+    private final String key2 = "memcached_key 4";
 
     private final String value = "memcached_value";
 
@@ -48,8 +49,8 @@ public class TestMemCache {
 
     private final int expiration = 5;
 
-    @Before
-    public void setUp() throws IOException {
+    @BeforeClass
+    public static void setUp() throws IOException {
         CacheConfiguration.init("classpath:testClasspathBuilder.properties");
         MemcachedClientConfiguration config = new MemcachedClientConfiguration();
         config.addServer("192.168.8.45", 11211);
@@ -57,8 +58,8 @@ public class TestMemCache {
         client = CacheClientBuilder.buildCacheClient("memcached", config);
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDown() {
         CacheClientBuilder.closeCacheClient("memcached");
     }
 
@@ -180,6 +181,15 @@ public class TestMemCache {
 
         client.remove(key, null);
         Assert.assertNull(client.get(key, null));
+    }
+    
+    @Test
+    public void testWithPojo() {
+        Person person = new Person("300", "kuka", 20);
+        client.set(key2, person, expiration, null);
+        Person found = client.get(key2, null);
+        Assert.assertNotNull(found);
+        Assert.assertEquals(person, found);
     }
 
 }
