@@ -7,7 +7,7 @@
 	</cache>
 	<cache key="kvdb" clientClass="com.dianping.cache.memcached.MemcachedClientImpl"
 		metadataClass="com.dianping.cache.builder.metadata.MemcachedMetadataParser"
-		transcoder="com.dianping.cache.memcached.StringTranscoder">
+		transcoder="com.dianping.cache.memcached.KvdbTranscoder">
 		<server address="192.168.8.45" port="11211" />
 	</cache>
 </caches>

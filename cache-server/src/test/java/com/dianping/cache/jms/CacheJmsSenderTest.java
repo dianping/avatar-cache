@@ -1,6 +1,7 @@
 package com.dianping.cache.jms;
 
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.dianping.remote.cache.dto.CacheMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/config/spring/applicationContext-cache-jms-sender-test.xml")
+@Ignore
 public class CacheJmsSenderTest {
 
 	@Autowired

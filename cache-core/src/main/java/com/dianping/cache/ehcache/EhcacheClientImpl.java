@@ -235,9 +235,10 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
      * 
      * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T get(String key, boolean isHot, String category) {
-        T result = get(key, category);
+        T result = (T) get(key, category);
 
         if (isHot) {
             if (result == null) {
@@ -258,11 +259,11 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
                     return null;
                 } else {
                     // 批量清理时，因为version升级了，所以bak数据要考虑从上一个版本中查找
-                    result = get(key + "_bak", category);
+                    result = (T) get(key + "_bak", category);
                     if (result == null) {
                         String lastVersionKey = genLastVersionCacheKey(key);
                         if (!key.equals(lastVersionKey)) {
-                            result = get(lastVersionKey + "_bak", category);
+                            result = (T) get(lastVersionKey + "_bak", category);
                         }
                     }
                     return result;
