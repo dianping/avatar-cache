@@ -15,14 +15,11 @@
  */
 package com.dianping.cache.builder.metadata;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.dianping.cache.builder.CacheClientFactory;
 import com.dianping.cache.core.CacheClient;
-import com.dianping.cache.core.CacheClientBuilder;
 
 /**
  * Test class for XMLMetadataFactory
@@ -40,17 +37,11 @@ public class TestXMLMetadataFactory {
 
 		Assert.assertNotNull(client);
 
-		CacheClientBuilder.closeCacheClient("memcached");
-
 		try {
 			factory.findCacheClient("444");
 			Assert.assertTrue(false);
 		} catch (Exception e) {
 
 		}
-		
-		List<String> keys = factory.getCacheKeys();
-		Assert.assertNotNull(keys);
-		Assert.assertEquals(keys.size(), 1);
 	}
 }

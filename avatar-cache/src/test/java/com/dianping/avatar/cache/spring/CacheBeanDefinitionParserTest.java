@@ -15,9 +15,10 @@
  */
 package com.dianping.avatar.cache.spring;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -27,7 +28,7 @@ import org.springframework.core.io.ClassPathResource;
  * @author youngphy.yang
  *
  */
-
+@Ignore
 public class CacheBeanDefinitionParserTest{	
 	/**
 	 * Test whether the interceptor takes effect or not

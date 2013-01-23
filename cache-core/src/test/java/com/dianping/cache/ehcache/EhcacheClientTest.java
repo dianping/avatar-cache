@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -75,6 +76,7 @@ public class EhcacheClientTest {
 
         end.await();
         Assert.assertEquals(1, cacheReturnNullList.size());
+        cacheClient.shutdown();
     }
 
     @Test
@@ -130,6 +132,7 @@ public class EhcacheClientTest {
 
         end.await();
         Assert.assertEquals(2, cacheReturnNullList.size());
+        cacheClient.shutdown();
     }
 
     @Test
@@ -145,9 +148,11 @@ public class EhcacheClientTest {
             Assert.assertNotNull(cacheClient.get(key + "_bak", null));
             Thread.sleep(1000);
         }
+        cacheClient.shutdown();
     }
 
     @Test
+    @Ignore
     public void testHotKey3() throws Exception {
 
         final String key = "a";
@@ -211,5 +216,6 @@ public class EhcacheClientTest {
         end.await();
         Assert.assertEquals(threadCount - 1, oldValueList.size());
         Assert.assertEquals(threadCount, newValueList.size());
+        cacheClient.shutdown();
     }
 }
