@@ -15,6 +15,7 @@
  */
 package com.dianping.avatar.cache;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -243,6 +244,6 @@ public class DefaultCacheService implements CacheService {
             public Object execute() throws Exception {
                 return container.mGetWithNonExists(keys);
             }
-        }, null, "MGet entities by cachekeys failed.");
+        }, new HashMap<CacheKey, T>(), "MGet entities by cachekeys failed.");
     }
 }
