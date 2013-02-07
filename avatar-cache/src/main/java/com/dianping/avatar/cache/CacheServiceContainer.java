@@ -516,6 +516,9 @@ public class CacheServiceContainer {
                             - begin);
             t.setStatus(Message.SUCCESS);
             Map<CacheKey, T> res = new HashMap<CacheKey, T>();
+            if (cachedDataMap == null) {
+                cachedDataMap = new HashMap<String, T>();
+            }
             for (String finalKey : finalKeys) {
                 res.put(finalKeyCacheKeyMapping.get(finalKey), cachedDataMap.get(finalKey));
             }
