@@ -39,6 +39,13 @@ public class SecurityHelper {
     	if (authentication == null) {
     		return null;
     	}
+    	
+    	Object detailsObj = authentication.get("details");
+    	
+    	if(!(detailsObj instanceof Map)) {
+    	    return null;
+    	}
+    	
     	Map<String, Object> details = (Map<String, Object>) authentication.get("details");
     	String realName = null;
     	if (details != null) {
