@@ -46,7 +46,7 @@ public class SecurityHelper {
     	    return null;
     	}
     	
-    	Map<String, Object> details = (Map<String, Object>) authentication.get("details");
+    	Map<String, Object> details = (Map<String, Object>) detailsObj;
     	String realName = null;
     	if (details != null) {
     		realName = (String) details.get("realName");
