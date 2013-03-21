@@ -90,6 +90,11 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>rest-CacheManagement</servlet-name>
+		<servlet-class>com.dianping.cache.servlet.RestCacheManagementServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
 	<!-- 
 	<servlet-mapping>
 		<servlet-name>remoting</servlet-name>
@@ -100,6 +105,11 @@
 	<servlet-mapping>
 		<servlet-name>cache-sender</servlet-name>
 		<url-pattern>/cache-message/send.action</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>rest-CacheManagement</servlet-name>
+		<url-pattern>/cacheAdminRest/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
