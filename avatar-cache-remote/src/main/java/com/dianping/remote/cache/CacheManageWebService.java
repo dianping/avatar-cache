@@ -56,5 +56,11 @@ public interface CacheManageWebService {
 	void createCacheKeyConfig(CacheKeyConfigurationDTO config);
 	
 	void updateCacheKeyConfig(CacheKeyConfigurationDTO config);
+
+    /**
+     * @param category
+     * @param serverOrGroup
+     */
+    void clearByCategory(String category, String serverOrGroup);
 	
 }

@@ -39,6 +39,11 @@ public class CacheManageWebServiceImpl implements CacheManageWebService {
 	private CacheKeyConfigurationService cacheKeyConfigurationService;
 	
 	@Override
+    public void clearByCategory(String category, String serverOrGroup) {
+	    cacheConfigurationService.clearByCategory(category, serverOrGroup);
+	}
+	
+	@Override
 	public void clearByCategory(String category) {
 		cacheConfigurationService.clearByCategory(category);
 	}
