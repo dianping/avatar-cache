@@ -377,6 +377,13 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				if (locked == null || !locked.booleanValue()) {
 					try {
                         result = (T) getLocalCacheClient().get(key, category, timeoutAware);
+                        // 如果版本升级了，需要从老版本上查找
+                        if (result == null) {
+                            String lastVersionKey = genLastVersionCacheKey(key);
+                            if (!key.equals(lastVersionKey)) {
+                                result = (T) get(lastVersionKey, category, timeoutAware);
+                            }
+                        }
                     } catch (TimeoutException e) {
                         timeoutException = e;
                         result = null;
@@ -386,6 +393,11 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				}
 
 			} else {
+			    String lastVersionKey = genLastVersionCacheKey(key);
+			    // 如果版本升级了，需要删除老版本
+			    if(!key.equals(lastVersionKey)){
+			        getLocalCacheClient().remove(lastVersionKey, category);
+			    }
 				getLocalCacheClient().set(key, result, 3600 * 24, category);
 			}
 		}
@@ -405,6 +417,44 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 		}
 
 	}
+	
+	private boolean isNumeric(String src) {
+        if (src == null || src.length() == 0) {
+            return false;
+        }
+
+        for (int i = 0; i < src.length(); i++) {
+            if (src.charAt(i) < '0' || src.charAt(i) > '9') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+	
+	private String genLastVersionCacheKey(String currentVersionCacheKey) {
+        if (currentVersionCacheKey == null) {
+            return currentVersionCacheKey;
+        }
+
+        int versionSplitPos = currentVersionCacheKey.lastIndexOf("_");
+        if (versionSplitPos < 0) {
+            return currentVersionCacheKey;
+        }
+
+        String versionStr = currentVersionCacheKey.substring(versionSplitPos + 1);
+        if (!isNumeric(versionStr)) {
+            return currentVersionCacheKey;
+        }
+
+        Integer currentVersion = Integer.valueOf(versionStr);
+        if (currentVersion > 0) {
+            return currentVersionCacheKey.substring(0, versionSplitPos + 1) + (currentVersion - 1);
+        } else {
+            return currentVersionCacheKey;
+        }
+
+    }
 
 	private boolean needDualRW() {
 		boolean needDualRW = false;
