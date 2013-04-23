@@ -252,7 +252,7 @@ public class DefaultCacheService implements CacheService {
      * @see com.dianping.avatar.cache.CacheService#getWithTimeoutAware(com.dianping.avatar.cache.CacheKey)
      */
     @Override
-    public <T> T getWithTimeoutAware(CacheKey key) throws TimeoutException {
+    public <T> T getOrTimeout(CacheKey key) throws TimeoutException {
         return container.getWithTimeoutAware(key);
     }
 }

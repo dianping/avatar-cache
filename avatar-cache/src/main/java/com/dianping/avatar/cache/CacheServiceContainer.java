@@ -245,7 +245,8 @@ public class CacheServiceContainer {
                 Cat.getProducer().logEvent("Cache." + cacheType, category + ":timeout", Message.SUCCESS, "");
                 Cat.getProducer().logEvent("Cache." + cacheType, category + ":missed", Message.SUCCESS, "");
                 t.addData("finalKey", finalKey);
-                t.setStatus(Message.SUCCESS);
+                t.setStatus(e);
+                Cat.getProducer().logError(e);
                 throw e;
             }
             long end = System.nanoTime();

@@ -357,7 +357,8 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 		}
 		
 		if (isHot) {
-			if (result == null) {
+			String lastVersionCacheKey = genLastVersionCacheKey(key);
+            if (result == null) {
 				Future<Boolean> future = writeClient.add(key + "_lock", getHotkeyLockTime(), true);
 				Future<Boolean> backupFuture = needDualRW() ? backupClient
 						.add(key + "_lock", getHotkeyLockTime(), true) : null;
@@ -379,9 +380,8 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                         result = (T) getLocalCacheClient().get(key, category, timeoutAware);
                         // 如果版本升级了，需要从老版本上查找
                         if (result == null) {
-                            String lastVersionKey = genLastVersionCacheKey(key);
-                            if (!key.equals(lastVersionKey)) {
-                                result = (T) get(lastVersionKey, category, timeoutAware);
+                            if(!key.equals(lastVersionCacheKey)){
+                                result = (T) getLocalCacheClient().get(lastVersionCacheKey, category, timeoutAware);
                             }
                         }
                     } catch (TimeoutException e) {
@@ -393,10 +393,9 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				}
 
 			} else {
-			    String lastVersionKey = genLastVersionCacheKey(key);
 			    // 如果版本升级了，需要删除老版本
-			    if(!key.equals(lastVersionKey)){
-			        getLocalCacheClient().remove(lastVersionKey, category);
+			    if(!key.equals(lastVersionCacheKey)){
+			        getLocalCacheClient().remove(lastVersionCacheKey, category);
 			    }
 				getLocalCacheClient().set(key, result, 3600 * 24, category);
 			}
