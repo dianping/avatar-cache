@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
@@ -112,14 +113,19 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T get(String key, String category) {
+	public <T> T get(String key, String category, boolean timeoutAware) throws TimeoutException{
 		String reformedKey = reformKey(key);
 		Future<Object> future = readClient.asyncGet(reformedKey);
 		T result = null;
+		TimeoutException timeoutException = null;
+		
 
 		try {
 			// use timeout to eliminate memcached servers' crash
 			result = (T) future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
+		} catch(TimeoutException e){
+		    timeoutException = e;
+		    result = null;
 		} catch (Exception e) {
 			result = null;
 		}
@@ -127,9 +133,16 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 		if (result == null && needDualRW()) {
 			try {
 				result = (T) backupClient.asyncGet(reformedKey).get(getGetTimeout(), TimeUnit.MILLISECONDS);
-			} catch (Exception e1) {
+			} catch(TimeoutException e){
+			    timeoutException = e;
+	            result = null;
+	        } catch (Exception e1) {
 				result = null;
 			}
+		}
+		
+		if(timeoutAware && timeoutException != null && result == null){
+		    throw timeoutException;
 		}
 
 		return result;
@@ -299,8 +312,10 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				MemcachedClient client = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(mainServer));
 				readClient = client;
 				writeClient = client;
+				client.setName(key);
 				if (backupServer != null) {
 					backupClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(backupServer));
+					backupClient.setName(key + "_backup");
 				}
 			} else {
 				// kvdb
@@ -309,6 +324,9 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				String readServers = serverSplits.length == 1 ? writeServer : serverSplits[1].trim();
 				readClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(readServers));
 				writeClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(writeServer));
+				readClient.setName(key + "-r");
+				writeClient.setName(key + "-w");
+
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -327,8 +345,17 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T get(String key, boolean isHot, String category) {
-		T result = (T) get(key, category);
+	public <T> T get(String key, boolean isHot, String category, boolean timeoutAware) throws TimeoutException {
+		T result = null;
+		TimeoutException timeoutException = null;
+		
+		try{
+		    result = (T) get(key, category, timeoutAware);
+		} catch(TimeoutException e){
+		    timeoutException = e;
+		    result = null;
+		}
+		
 		if (isHot) {
 			if (result == null) {
 				Future<Boolean> future = writeClient.add(key + "_lock", getHotkeyLockTime(), true);
@@ -348,7 +375,12 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 				}
 
 				if (locked == null || !locked.booleanValue()) {
-					result = (T) getLocalCacheClient().get(key, category);
+					try {
+                        result = (T) getLocalCacheClient().get(key, category, timeoutAware);
+                    } catch (TimeoutException e) {
+                        timeoutException = e;
+                        result = null;
+                    }
 				} else {
 					result = null;
 				}
@@ -356,6 +388,10 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 			} else {
 				getLocalCacheClient().set(key, result, 3600 * 24, category);
 			}
+		}
+		
+		if(timeoutAware && timeoutException != null && result == null){
+		    throw timeoutException;
 		}
 		return result;
 	}
@@ -418,4 +454,28 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
 	public void remove(String key) {
 		remove(key, null);
 	}
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, String category) {
+        try {
+            return get(key, category, false);
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, boolean isHot, String category) {
+        try {
+            return get(key, isHot, category, false);
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
 }

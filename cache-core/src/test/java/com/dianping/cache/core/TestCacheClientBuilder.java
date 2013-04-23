@@ -18,6 +18,7 @@ package com.dianping.cache.core;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -126,5 +127,23 @@ public class TestCacheClientBuilder {
 			// TODO Auto-generated method stub
 			
 		}
+
+        /* (non-Javadoc)
+         * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String, boolean)
+         */
+        @Override
+        public <T> T get(String key, String category, boolean timeoutAware) throws TimeoutException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String, boolean)
+         */
+        @Override
+        public <T> T get(String key, boolean isHot, String category, boolean timeoutAware) throws TimeoutException {
+            // TODO Auto-generated method stub
+            return null;
+        }
 	}
 }

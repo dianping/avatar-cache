@@ -114,7 +114,7 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String key, String category) {
+    public <T> T get(String key, String category, boolean timeoutAware) {
         Element element = findCache(category).get(key);
         return (T) (element == null ? null : element.getObjectValue());
     }
@@ -237,8 +237,8 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String key, boolean isHot, String category) {
-        T result = (T) get(key, category);
+    public <T> T get(String key, boolean isHot, String category, boolean timeoutAware) {
+        T result = (T) get(key, category, timeoutAware);
 
         if (isHot) {
             if (result == null) {
@@ -259,11 +259,11 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
                     return null;
                 } else {
                     // 批量清理时，因为version升级了，所以bak数据要考虑从上一个版本中查找
-                    result = (T) get(key + "_bak", category);
+                    result = (T) get(key + "_bak", category, timeoutAware);
                     if (result == null) {
                         String lastVersionKey = genLastVersionCacheKey(key);
                         if (!key.equals(lastVersionKey)) {
-                            result = (T) get(lastVersionKey + "_bak", category);
+                            result = (T) get(lastVersionKey + "_bak", category, timeoutAware);
                         }
                     }
                     return result;
@@ -353,5 +353,21 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
     @Override
     public void remove(String key) {
         remove(key, null);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, String category) {
+        return get(key, category, false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, boolean isHot, String category) {
+        return get(key, isHot, category, false);
     }
 }
