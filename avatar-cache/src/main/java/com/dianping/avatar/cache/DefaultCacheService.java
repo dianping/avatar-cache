@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import com.dianping.avatar.cache.configuration.CacheItemConfigManager;
 import com.dianping.avatar.cache.util.CacheMonitorUtil;
@@ -245,5 +246,13 @@ public class DefaultCacheService implements CacheService {
                 return container.mGetWithNonExists(keys);
             }
         }, new HashMap<CacheKey, T>(), "MGet entities by cachekeys failed.");
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.avatar.cache.CacheService#getWithTimeoutAware(com.dianping.avatar.cache.CacheKey)
+     */
+    @Override
+    public <T> T getWithTimeoutAware(CacheKey key) throws TimeoutException {
+        return container.getWithTimeoutAware(key);
     }
 }

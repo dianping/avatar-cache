@@ -72,7 +72,7 @@ public class LocalCacheClientImpl implements CacheClient, Lifecycle, InitialConf
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(String key, String category) {
+    public <T> T get(String key, String category, boolean timeoutAware) {
         CacheElement element = cacheControl.get(key);
         return (T) (element != null ? element.getValue() : null);
     }
@@ -151,8 +151,8 @@ public class LocalCacheClientImpl implements CacheClient, Lifecycle, InitialConf
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T get(String key, boolean isHot, String category) {
-		return (T) get(key, category);
+	public <T> T get(String key, boolean isHot, String category, boolean timeoutAware) {
+		return (T) get(key, category, timeoutAware);
 	}
 
     /* (non-Javadoc)
@@ -170,5 +170,21 @@ public class LocalCacheClientImpl implements CacheClient, Lifecycle, InitialConf
 	public void remove(String key) {
 		remove(key, null);
 	}
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, String category) {
+        return get(key, category, false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, boolean isHot, String category) {
+        return get(key, isHot, category, false);
+    }
 
 }

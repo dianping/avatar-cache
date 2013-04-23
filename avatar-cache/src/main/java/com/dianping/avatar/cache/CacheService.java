@@ -18,6 +18,7 @@ package com.dianping.avatar.cache;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Cache interface provided for business.
@@ -124,7 +125,9 @@ public interface CacheService {
 	 * @return
 	 */
 	String getFinalKey(CacheKey key);
-
+	
+	<T> T getWithTimeoutAware(CacheKey key) throws TimeoutException;
+	
 	/**
 	 * The composite key for multiple-get entities.
 	 */

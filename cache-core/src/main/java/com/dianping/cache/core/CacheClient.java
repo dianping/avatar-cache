@@ -17,6 +17,7 @@ package com.dianping.cache.core;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Consistent cache client interface for the general purpose of transparent
@@ -91,6 +92,8 @@ public interface CacheClient {
 	 */
 	<T> T get(String key, String category);
 	
+	<T> T get(String key, String category, boolean timeoutAware) throws TimeoutException;
+	
 	/**
 	 * Get with a single key
 	 * 
@@ -102,6 +105,8 @@ public interface CacheClient {
 	 * @return the result from the cache (null if there is none)
 	 */
 	<T> T get(String key, boolean isHot, String category);
+	
+	<T> T get(String key, boolean isHot, String category, boolean timeoutAware) throws TimeoutException;
 
 	/**
 	 * Get the values for multiple keys from the cache

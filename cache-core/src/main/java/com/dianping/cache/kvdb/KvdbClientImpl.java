@@ -84,7 +84,7 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T get(String key, String category) {
+	public <T> T get(String key, String category, boolean timeoutAware) {
 		Future<Object> future = readClient.asyncGet(key);
         try {
             // use timeout to eliminate memcachedb servers' crash
@@ -168,8 +168,8 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T get(String key, boolean isHot, String category) {
-		return (T) get(key, category);
+	public <T> T get(String key, boolean isHot, String category, boolean timeoutAware) {
+		return (T) get(key, category, timeoutAware);
 	}
 
     /* (non-Javadoc)
@@ -187,5 +187,21 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
 	public void remove(String key) {
 		remove(key, null);
 	}
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, String category) {
+        return get(key, category, false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String)
+     */
+    @Override
+    public <T> T get(String key, boolean isHot, String category) {
+        return get(key, isHot, category, false);
+    }
 
 }

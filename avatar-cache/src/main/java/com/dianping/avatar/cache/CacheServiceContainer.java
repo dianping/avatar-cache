@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import com.dianping.avatar.cache.CacheService.EntityKey;
 import com.dianping.avatar.cache.annotation.Cache;
@@ -222,6 +223,48 @@ public class CacheServiceContainer {
 			t.complete();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+    public <T> T getWithTimeoutAware(CacheKey key) throws TimeoutException {
+        if (key == null) {
+            throw new IllegalArgumentException("CacheKey is null.");
+        }
+        CacheKeyType cacheKeyType = getCacheKeyMetadata(key);
+        String cacheType = cacheKeyType.getCacheType();
+        String category = key.getCategory();
+
+        Transaction t = Cat.getProducer().newTransaction("Cache." + cacheType, category + ":get");
+        try {
+            String finalKey = cacheKeyType.getKey(key.getParams());
+            CacheClient cacheClient = getCacheClient(cacheKeyType.getCacheType());
+            long begin = System.nanoTime();
+            Object cachedItem = null;
+            try {
+                cachedItem = cacheClient.get(finalKey, cacheKeyType.isHot(), cacheKeyType.getCategory(), true);
+            } catch (TimeoutException e) {
+                Cat.getProducer().logEvent("Cache." + cacheType, category + ":timeout", Message.SUCCESS, "");
+                Cat.getProducer().logEvent("Cache." + cacheType, category + ":missed", Message.SUCCESS, "");
+                t.addData("finalKey", finalKey);
+                t.setStatus(Message.SUCCESS);
+                throw e;
+            }
+            long end = System.nanoTime();
+            if (cachedItem != null) {
+                cacheTracker.addGetInfo(finalKey + "[" + cacheKeyType.getCacheType() + "]", end - begin);
+            } else {
+                Cat.getProducer().logEvent("Cache." + cacheType, category + ":missed", Message.SUCCESS, "");
+            }
+            t.addData("finalKey", finalKey);
+            t.setStatus(Message.SUCCESS);
+            return (T) cachedItem;
+        } catch (RuntimeException e) {
+            t.setStatus(e);
+            Cat.getProducer().logError(e);
+            throw e;
+        } finally {
+            t.complete();
+        }
+    }
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(Class<?> cz, List<?> params) {
