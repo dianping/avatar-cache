@@ -147,6 +147,9 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
 		} catch (IOException e) {
 			throw new RuntimeException("Construct kvdb client failed, cause: ", e);
 		}
+		readClient.setName(key + "-r");
+		writeClient.setName(key + "-w");
+
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import net.spy.memcached.DefaultHashAlgorithm;
+import net.spy.memcached.HashAlgorithm;
 
 public class MockKetamaNodeLocator {
 	
@@ -22,7 +22,7 @@ public class MockKetamaNodeLocator {
 		for(String node : nodes) {
 			// Ketama does some special work with md5 where it reuses chunks.
 			for(int i=0; i<numReps / 4; i++) {
-				byte[] digest=DefaultHashAlgorithm.computeMd5(config.getKeyForNode(node, i));
+			    byte[] digest=HashAlgorithm.computeMd5(config.getKeyForNode(node, i));
 				for(int h=0;h<4;h++) {
 					Long k = ((long)(digest[3+h*4]&0xFF) << 24)
 						| ((long)(digest[2+h*4]&0xFF) << 16)
@@ -37,7 +37,7 @@ public class MockKetamaNodeLocator {
 	}
 	
 	public String getPrimary(final String k) {
-		String rv=getNodeForKey(DefaultHashAlgorithm.KETAMA_HASH.hash(k));
+	    String rv=getNodeForKey(HashAlgorithm.KETAMA_HASH.hash(k));
 		assert rv != null : "Found no node for key " + k;
 		return rv;
 	}
