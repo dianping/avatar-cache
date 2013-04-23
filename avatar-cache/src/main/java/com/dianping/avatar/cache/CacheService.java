@@ -126,7 +126,7 @@ public interface CacheService {
 	 */
 	String getFinalKey(CacheKey key);
 	
-	<T> T getWithTimeoutAware(CacheKey key) throws TimeoutException;
+	<T> T getOrTimeout(CacheKey key) throws TimeoutException;
 	
 	/**
 	 * The composite key for multiple-get entities.
