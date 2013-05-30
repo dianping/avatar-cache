@@ -255,4 +255,12 @@ public class DefaultCacheService implements CacheService {
     public <T> T getOrTimeout(CacheKey key) throws TimeoutException {
         return container.getWithTimeoutAware(key);
     }
+    
+    /* (non-Javadoc)
+     * @see com.dianping.avatar.cache.CacheService#mGetOrTimeout(com.dianping.avatar.cache.CacheKey)
+     */
+    @Override
+    public <T> Map<CacheKey, T> mGetOrTimeout(List<CacheKey> keys) throws TimeoutException {
+        return container.mGetWithTimeoutAware(keys);
+    }
 }

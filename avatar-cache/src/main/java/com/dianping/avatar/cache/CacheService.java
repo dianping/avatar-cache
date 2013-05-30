@@ -128,6 +128,8 @@ public interface CacheService {
 	
 	<T> T getOrTimeout(CacheKey key) throws TimeoutException;
 	
+	<T> Map<CacheKey, T> mGetOrTimeout(List<CacheKey> keys) throws TimeoutException;
+	
 	/**
 	 * The composite key for multiple-get entities.
 	 */

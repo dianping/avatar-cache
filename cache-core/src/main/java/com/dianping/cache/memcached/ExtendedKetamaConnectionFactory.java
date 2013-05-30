@@ -26,15 +26,22 @@ import net.spy.memcached.transcoders.Transcoder;
 public class ExtendedKetamaConnectionFactory extends KetamaConnectionFactory implements ExtendedConnectionFactory {
 
 	private Transcoder<Object> transcoder;
+	private long opQueueMaxBlockTime;
 	
 	public ExtendedKetamaConnectionFactory(int qLen, int bufSize, long opQueueMaxBlockTime) {
 		super(qLen, bufSize, opQueueMaxBlockTime);
+		this.opQueueMaxBlockTime = opQueueMaxBlockTime;
+	}
+	
+	@Override
+	public long getOpQueueMaxBlockTime() {
+	    return opQueueMaxBlockTime;
 	}
 	
 	public ExtendedKetamaConnectionFactory() {
 		this(DEFAULT_OP_QUEUE_LEN, DEFAULT_READ_BUFFER_SIZE, DEFAULT_OP_QUEUE_MAX_BLOCK_TIME);
 	}
-
+	
 	@Override
 	public Transcoder<Object> getDefaultTranscoder() {
 		return transcoder;

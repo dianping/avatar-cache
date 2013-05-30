@@ -122,15 +122,9 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
     /**
      * @see com.dianping.cache.core.CacheClient#getBulk(java.util.Collection)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories) {
-        Map<String, T> map = new HashMap<String, T>();
-        for (String key : keys) {
-            Element element = findCache(categories == null ? null : categories.get(key)).get(key);
-            map.put(key, (element == null ? null : (T) element.getObjectValue()));
-        }
-        return map;
+        return getBulk(keys, categories, false);
     }
 
     /**
@@ -355,19 +349,42 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
         remove(key, null);
     }
 
-    /* (non-Javadoc)
-     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String,
+     * java.lang.String)
      */
     @Override
     public <T> T get(String key, String category) {
         return get(key, category, false);
     }
 
-    /* (non-Javadoc)
-     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.dianping.cache.core.CacheClient#get(java.lang.String, boolean,
+     * java.lang.String)
      */
     @Override
     public <T> T get(String key, boolean isHot, String category) {
         return get(key, isHot, category, false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.dianping.cache.core.CacheClient#getBulk(java.util.Collection,
+     * java.util.Map, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories, boolean timeoutAware) {
+        Map<String, T> map = new HashMap<String, T>();
+        for (String key : keys) {
+            Element element = findCache(categories == null ? null : categories.get(key)).get(key);
+            map.put(key, (element == null ? null : (T) element.getObjectValue()));
+        }
+        return map;
     }
 }

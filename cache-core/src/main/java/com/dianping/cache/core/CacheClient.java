@@ -118,6 +118,8 @@ public interface CacheClient {
 	 * @return a map of the values (for each value that exists)
 	 */
 	<T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories);
+	
+	<T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories, boolean timeoutAware)  throws TimeoutException;
 
 	/**
 	 * remove the given key from the cache

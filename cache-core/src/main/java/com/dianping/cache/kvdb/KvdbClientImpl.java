@@ -94,16 +94,9 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
         }
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories) {
-		Future<Map<String, Object>> future = readClient.asyncGetBulk(keys);
-        try {
-            // use timeout to eliminate memcachedb servers' crash
-            return (Map<String, T>) future.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            return null;
-        }
+		return getBulk(keys, categories, false);
 	}
 
 	@Override
@@ -202,6 +195,22 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
     @Override
     public <T> T get(String key, boolean isHot, String category) {
         return get(key, isHot, category, false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#getBulk(java.util.Collection, java.util.Map, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories, boolean timeoutAware)
+            {
+        Future<Map<String, Object>> future = readClient.asyncGetBulk(keys);
+        try {
+            // use timeout to eliminate memcachedb servers' crash
+            return (Map<String, T>) future.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
