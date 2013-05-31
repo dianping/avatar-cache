@@ -145,5 +145,15 @@ public class TestCacheClientBuilder {
             // TODO Auto-generated method stub
             return null;
         }
+
+        /* (non-Javadoc)
+         * @see com.dianping.cache.core.CacheClient#getBulk(java.util.Collection, java.util.Map, boolean)
+         */
+        @Override
+        public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories, boolean timeoutAware)
+                throws TimeoutException {
+            // TODO Auto-generated method stub
+            return null;
+        }
 	}
 }

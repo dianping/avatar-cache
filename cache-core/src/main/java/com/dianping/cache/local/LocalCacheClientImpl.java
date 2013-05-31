@@ -77,17 +77,9 @@ public class LocalCacheClientImpl implements CacheClient, Lifecycle, InitialConf
         return (T) (element != null ? element.getValue() : null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories) {
-        Collection<CacheElement> elements = cacheControl.gets(keys);
-        Map<String, T> map = new HashMap<String, T>();
-        if (elements != null && !elements.isEmpty()) {
-            for (CacheElement element : elements) {
-                map.put(element.getKey(), (T) element.getValue());
-            }
-        }
-        return map;
+        return getBulk(keys, categories, false);
     }
 
     @Override
@@ -185,6 +177,23 @@ public class LocalCacheClientImpl implements CacheClient, Lifecycle, InitialConf
     @Override
     public <T> T get(String key, boolean isHot, String category) {
         return get(key, isHot, category, false);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.core.CacheClient#getBulk(java.util.Collection, java.util.Map, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> Map<String, T> getBulk(Collection<String> keys, Map<String, String> categories, boolean timeoutAware)
+            {
+        Collection<CacheElement> elements = cacheControl.gets(keys);
+        Map<String, T> map = new HashMap<String, T>();
+        if (elements != null && !elements.isEmpty()) {
+            for (CacheElement element : elements) {
+                map.put(element.getKey(), (T) element.getValue());
+            }
+        }
+        return map;
     }
 
 }
