@@ -151,23 +151,34 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
     @Override
     public <T> T get(String key, String category, boolean timeoutAware) throws TimeoutException {
         String reformedKey = reformKey(key);
-        Future<Object> future = readClient.asyncGet(reformedKey);
         T result = null;
         TimeoutException timeoutException = null;
-
+        Future<Object> future = null;
         try {
-            // use timeout to eliminate memcached servers' crash
-            result = (T) future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            timeoutException = e;
+            future = readClient.asyncGet(reformedKey);
+        } catch (IllegalStateException e) {
+            timeoutException = new TimeoutException(e.getMessage());
             result = null;
-        } catch (Exception e) {
-            result = null;
+        }
+
+        if (future != null) {
+            try {
+                // use timeout to eliminate memcached servers' crash
+                result = (T) future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                timeoutException = e;
+                result = null;
+            } catch (Exception e) {
+                result = null;
+            }
         }
 
         if (result == null && needDualRW()) {
             try {
                 result = (T) backupClient.asyncGet(reformedKey).get(getGetTimeout(), TimeUnit.MILLISECONDS);
+            } catch (IllegalStateException e) {
+                timeoutException = new TimeoutException(e.getMessage());
+                result = null;
             } catch (TimeoutException e) {
                 timeoutException = e;
                 result = null;
@@ -193,8 +204,15 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
         Map<String, String> needReformed = reform(keys);
         Future<Map<String, Object>> future = null;
         boolean hasReformed = needReformed != null && !needReformed.isEmpty();
+        Map<String, T> result = null;
+        TimeoutException timeoutException = null;
         if (!hasReformed) {
-            future = readClient.asyncGetBulk(keys);
+            try {
+                future = readClient.asyncGetBulk(keys);
+            } catch (IllegalStateException e) {
+                timeoutException = new TimeoutException(e.getMessage());
+                result = null;
+            }
         } else {
             Collection<String> reformedKeys = new HashSet<String>();
             for (String key : keys) {
@@ -202,26 +220,32 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 reformedKeys.add(reformedKey != null ? reformedKey : key);
             }
             keys = reformedKeys;
-            future = readClient.asyncGetBulk(reformedKeys);
+            try {
+                future = readClient.asyncGetBulk(reformedKeys);
+            } catch (IllegalStateException e) {
+                timeoutException = new TimeoutException(e.getMessage());
+                result = null;
+            }
         }
 
-        Map<String, T> result = null;
-        TimeoutException timeoutException = null;
-
-        try {
-            // use timeout to eliminate memcached servers' crash
-            result = (Map<String, T>) future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
-
-        } catch (TimeoutException e) {
-            timeoutException = e;
-            result = null;
-        } catch (Exception e) {
-            result = null;
+        if (future != null) {
+            try {
+                // use timeout to eliminate memcached servers' crash
+                result = (Map<String, T>) future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                timeoutException = e;
+                result = null;
+            } catch (Exception e) {
+                result = null;
+            }
         }
 
         if (result == null && needDualRW()) {
             try {
                 result = (Map<String, T>) backupClient.asyncGetBulk(keys).get(getGetTimeout(), TimeUnit.MILLISECONDS);
+            } catch (IllegalStateException e) {
+                timeoutException = new TimeoutException(e.getMessage());
+                result = null;
             } catch (TimeoutException e) {
                 timeoutException = e;
                 result = null;
@@ -345,7 +369,8 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
     public void start() {
         try {
             // use ketama to provide consistent node hashing
-            ExtendedConnectionFactory connectionFactory = new ExtendedKetamaConnectionFactory(opQueueLen, readBufSize, opQueueMaxBlockTime);
+            ExtendedConnectionFactory connectionFactory = new ExtendedKetamaConnectionFactory(opQueueLen, readBufSize,
+                    opQueueMaxBlockTime);
             if (config.getTranscoder() != null) {
                 connectionFactory.setTranscoder(config.getTranscoder());
             } else {
