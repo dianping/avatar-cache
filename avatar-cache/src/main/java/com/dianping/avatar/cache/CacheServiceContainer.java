@@ -347,7 +347,7 @@ public class CacheServiceContainer {
         }
 
         List<CacheKey> cacheKeys = get(cacheKey);
-        if (cacheKey == null || cacheKeys.isEmpty()) {
+        if (cacheKeys == null || cacheKeys.isEmpty()) {
             return null;
         }
 
