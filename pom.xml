@@ -9,7 +9,7 @@
 		<version>2.0.0</version>
 	</parent>
 	<artifactId>avatar-cache-parent</artifactId>
-	<version>2.3.10</version>
+	<version>2.3.11</version>
 	<packaging>pom</packaging>
 	<name>Avatar cache parent</name>
 	<url>http://maven.apache.org</url>

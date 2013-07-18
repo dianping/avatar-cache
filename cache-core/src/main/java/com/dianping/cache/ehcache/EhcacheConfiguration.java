@@ -54,7 +54,7 @@ public class EhcacheConfiguration implements CacheClientConfiguration {
      * Create ehcache CacheManager instance from configuration file
      */
     public CacheManager buildEhcacheManager() {
-        if (getClass().getClassLoader().getResource(CUSTOM_EHCACHE_FILE_URL) != null) {
+        if (getClass().getResource(CUSTOM_EHCACHE_FILE_URL) != null) {
             xmlFile = CUSTOM_EHCACHE_FILE_URL;
         }
         URL url = getClass().getResource(xmlFile);
