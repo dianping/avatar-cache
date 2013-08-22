@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>com.dianping.dpsf</groupId>
 			<artifactId>dpsf-net</artifactId>
-			<version>1.4.5</version>
+			<version>1.6.3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dianping</groupId>
@@ -210,6 +210,11 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dianping.cat</groupId>
+			<artifactId>cat-core</artifactId>
+			<version>0.6.1</version>
 		</dependency>
 	</dependencies>
 	<profiles>
