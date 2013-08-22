@@ -29,30 +29,30 @@ import java.util.Map.Entry;
  */
 public class KetamaHashAlgorithmTest {
 
-	public static void main(String[] args) {
-		MockKetamaNodeLocator ketamaNodeLocator = new MockKetamaNodeLocator(Arrays.asList("192.168.8.46:11211", "192.168.8.47:11211", "192.168.8.45:11211", "192.168.8.48:11211"));
-		Map<String, List<String>> stats = new HashMap<String, List<String>>();
-		for (int i = 0; i < 100; i++) {
-			String key = "cache-key-" + i;
-			String primary = ketamaNodeLocator.getPrimary(key);
-//			System.out.println(key + "=" + primary);
-			if (!stats.containsKey(primary)) {
-				stats.put(primary, new ArrayList<String>());
-			}
-			List<String> list = stats.get(primary);
-			list.add(key);
-		}
-		for (Entry<String, List<String>> entry : stats.entrySet()) {
-			List<String> nodeList = entry.getValue();
-//			String nodeString = "";
-//			for (String node : nodeList) {
-//				nodeString += node + ", ";
+//	public static void main(String[] args) {
+//		MockKetamaNodeLocator ketamaNodeLocator = new MockKetamaNodeLocator(Arrays.asList("192.168.8.46:11211", "192.168.8.47:11211", "192.168.8.45:11211", "192.168.8.48:11211"));
+//		Map<String, List<String>> stats = new HashMap<String, List<String>>();
+//		for (int i = 0; i < 100; i++) {
+//			String key = "cache-key-" + i;
+//			String primary = ketamaNodeLocator.getPrimary(key);
+////			System.out.println(key + "=" + primary);
+//			if (!stats.containsKey(primary)) {
+//				stats.put(primary, new ArrayList<String>());
 //			}
-			System.out.println("------------" + entry.getKey() + "[" + nodeList.size() + "]" + "------------");
-			for (String node : nodeList) {
-				System.out.println(node);
-			}
-		}
-	}
+//			List<String> list = stats.get(primary);
+//			list.add(key);
+//		}
+//		for (Entry<String, List<String>> entry : stats.entrySet()) {
+//			List<String> nodeList = entry.getValue();
+////			String nodeString = "";
+////			for (String node : nodeList) {
+////				nodeString += node + ", ";
+////			}
+//			System.out.println("------------" + entry.getKey() + "[" + nodeList.size() + "]" + "------------");
+//			for (String node : nodeList) {
+//				System.out.println(node);
+//			}
+//		}
+//	}
 	
 }

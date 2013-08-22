@@ -392,10 +392,8 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 MemcachedClient client = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(mainServer));
                 readClient = client;
                 writeClient = client;
-                client.setName(key);
                 if (backupServer != null) {
                     backupClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(backupServer));
-                    backupClient.setName(key + "_backup");
                 }
             } else {
                 // kvdb
@@ -404,8 +402,6 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 String readServers = serverSplits.length == 1 ? writeServer : serverSplits[1].trim();
                 readClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(readServers));
                 writeClient = new MemcachedClient(connectionFactory, AddrUtil.getAddresses(writeServer));
-                readClient.setName(key + "-r");
-                writeClient.setName(key + "-w");
 
             }
         } catch (IOException e) {
