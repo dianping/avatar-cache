@@ -11,6 +11,7 @@
 	<artifactId>avatar-cache-server</artifactId>
 	<packaging>war</packaging>
 	<name>Avatar cache server</name>
+    <version>2.4.1</version>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<env>dev</env>
