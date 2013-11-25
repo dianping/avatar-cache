@@ -253,7 +253,7 @@ public class DefaultCacheService implements CacheService {
      */
     @Override
     public <T> T getOrTimeout(CacheKey key) throws TimeoutException {
-        return container.getWithTimeoutAware(key);
+        return (T)container.getWithTimeoutAware(key);
     }
     
     /* (non-Javadoc)
