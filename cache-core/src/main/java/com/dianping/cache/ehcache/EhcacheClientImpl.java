@@ -357,7 +357,7 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
      */
     @Override
     public <T> T get(String key, String category) {
-        return get(key, category, false);
+        return (T)get(key, category, false);
     }
 
     /*
@@ -368,7 +368,7 @@ public class EhcacheClientImpl implements CacheClient, Lifecycle, InitialConfigu
      */
     @Override
     public <T> T get(String key, boolean isHot, String category) {
-        return get(key, isHot, category, false);
+        return (T)get(key, isHot, category, false);
     }
 
     /*

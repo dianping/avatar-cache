@@ -184,7 +184,7 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
      */
     @Override
     public <T> T get(String key, String category) {
-        return get(key, category, false);
+        return (T)get(key, category, false);
     }
 
     /* (non-Javadoc)
@@ -192,7 +192,7 @@ public class KvdbClientImpl implements CacheClient, Lifecycle, KeyAware, Initial
      */
     @Override
     public <T> T get(String key, boolean isHot, String category) {
-        return get(key, isHot, category, false);
+        return (T)get(key, isHot, category, false);
     }
 
     /* (non-Javadoc)
