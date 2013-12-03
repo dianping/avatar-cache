@@ -594,7 +594,7 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
     @Override
     public <T> T get(String key, String category) {
         try {
-            return get(key, category, false);
+            return (T)get(key, category, false);
         } catch (TimeoutException e) {
             return null;
         }
@@ -609,7 +609,7 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
     @Override
     public <T> T get(String key, boolean isHot, String category) {
         try {
-            return get(key, isHot, category, false);
+            return (T)get(key, isHot, category, false);
         } catch (TimeoutException e) {
             return null;
         }
