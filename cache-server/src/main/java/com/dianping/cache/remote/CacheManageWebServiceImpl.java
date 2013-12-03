@@ -113,4 +113,20 @@ public class CacheManageWebServiceImpl implements CacheManageWebService {
 		this.cacheKeyConfigurationService = cacheKeyConfigurationService;
 	}
 
+    /* (non-Javadoc)
+     * @see com.dianping.remote.cache.CacheManageWebService#incVersion(java.lang.String)
+     */
+    @Override
+    public void incVersion(String category) {
+        cacheConfigurationService.incVersion(category);
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.remote.cache.CacheManageWebService#pushCategoryConfig(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void pushCategoryConfig(String category, String serverOrGroup) {
+        cacheConfigurationService.pushCategoryConfig(category, serverOrGroup);
+    }
+
 }

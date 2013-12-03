@@ -329,6 +329,19 @@ public class CacheConfigurationServiceImpl implements CacheConfigurationService,
 		operationLogService.create(succeed, "批量清除缓存", detail, true);
 	}
 	
+	private void logCacheVersionUpgrade(String category, boolean succeed) {
+        Map<String, String> detail = new HashMap<String, String>();
+        detail.put("category", category);
+        operationLogService.create(succeed, "缓存版本升级", detail, true);
+    }
+	
+	private void logCacheConfigPush(String category, List<String> destinations, boolean succeed) {
+        Map<String, String> detail = new HashMap<String, String>();
+        detail.put("category", category);
+        detail.put("destinations", StringUtils.join(destinations, ","));
+        operationLogService.create(succeed, "缓存版本推送", detail, true);
+    }
+	
 	private Map<String, String> transferConfigDetail(CacheConfiguration config, String prefix) {
 		prefix = prefix != null ? prefix + "." : "";
 		Map<String, String> detail = new HashMap<String, String>();
@@ -378,4 +391,62 @@ public class CacheConfigurationServiceImpl implements CacheConfigurationService,
 			);
 		}
 	}
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.service.CacheConfigurationService#incVersion(java.lang.String)
+     */
+    @Override
+    public void incVersion(String category) {
+        Assert.hasLength(category);
+                
+        try {
+            if(cacheKeyConfigurationService.incAndRetriveVersion(category) != null){
+                logCacheVersionUpgrade(category, true);
+            }else{
+                logCacheVersionUpgrade(category, false);
+            }
+        } catch (RuntimeException e) {
+            logCacheVersionUpgrade(category, false);
+            throw e;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see com.dianping.cache.service.CacheConfigurationService#pushCategoryConfig(java.lang.String)
+     */
+    @Override
+    public void pushCategoryConfig(String category, String serverOrGroup) {
+        Assert.hasLength(category);
+        List<String> destinations = null;
+        if (StringUtils.isNotBlank(serverOrGroup) && !"全部".equals(serverOrGroup)) {
+            String servers = serverOrGroup;
+            ServerGroup serverGroup = serverGroupService.find(serverOrGroup);
+            if (serverGroup != null) {
+                servers = serverGroup.getServers();
+            }
+            String[] serverArray = StringUtils.split(servers, ",，");
+            destinations = new ArrayList<String>();
+            for (String server : serverArray) {
+                destinations.add(server);
+            }
+        }
+        
+        CacheKeyConfiguration config = cacheKeyConfigurationService.find(category);
+        if (config != null) {
+            try {
+                final CacheKeyTypeVersionUpdateDTO message = new CacheKeyTypeVersionUpdateDTO();
+                message.setAddTime(System.currentTimeMillis());
+                message.setMsgValue(category);
+                message.setVersion(String.valueOf(config.getVersion()));
+                message.setDestinations(destinations);
+                cacheMessageProducer.sendMessageToTopic(message);
+                logCacheConfigPush(category, destinations, true);
+            } catch (RuntimeException e) {
+                logCacheConfigPush(category, destinations, false);
+                throw e;
+            }
+        } else {
+            logger.warn("Push category[" + category + "] config failed, the category not found.");
+        }
+    }
 }

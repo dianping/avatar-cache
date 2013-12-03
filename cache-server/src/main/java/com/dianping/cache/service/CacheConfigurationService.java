@@ -81,4 +81,8 @@ public interface CacheConfigurationService {
 	
 	void delete(String key);
 	
+	void incVersion(String category);
+	
+	void pushCategoryConfig(String category, String serverOrGroup);
+	
 }

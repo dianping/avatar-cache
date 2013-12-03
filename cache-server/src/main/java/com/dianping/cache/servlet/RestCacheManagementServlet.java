@@ -30,17 +30,19 @@ public class RestCacheManagementServlet extends HttpServlet {
     /**
      * Serial Version UID
      */
-    private static final long     serialVersionUID      = 7602875515792719125L;
+    private static final long     serialVersionUID         = 7602875515792719125L;
 
-    private CacheManageWebService cacheManageService    = SpringLocator.getBean(CacheManageWebService.class);
+    private CacheManageWebService cacheManageService       = SpringLocator.getBean(CacheManageWebService.class);
 
-    private static final String   REQ_CLEAR_BY_CATEGORY = "clearCacheByCategory";
-    private static final String   REQ_CLEAR_BY_KEY      = "clearCacheByKey";
+    private static final String   REQ_CLEAR_BY_CATEGORY    = "clearCacheByCategory";
+    private static final String   REQ_CLEAR_BY_KEY         = "clearCacheByKey";
+    private static final String   REQ_INC_CATEGORY_VERSION = "incCacheCategoryVersion";
+    private static final String   REQ_PUSH_CATEGORY_CONFIG = "pushCacheCategoryConfig";
 
-    private static final String   PARAM_CATEGORY        = "category";
-    private static final String   PARAM_IPS             = "ips";
-    private static final String   PARAM_KEY             = "key";
-    private static final String   PARAM_CACHETYPE       = "type";
+    private static final String   PARAM_CATEGORY           = "category";
+    private static final String   PARAM_IPS                = "ips";
+    private static final String   PARAM_KEY                = "key";
+    private static final String   PARAM_CACHETYPE          = "type";
 
     /**
      * Get building message parameters, and then send this message to JMS
@@ -56,14 +58,21 @@ public class RestCacheManagementServlet extends HttpServlet {
             }
 
             String action = uri.substring(uri.lastIndexOf("/") + 1);
-            if (!REQ_CLEAR_BY_CATEGORY.equalsIgnoreCase(action) && !REQ_CLEAR_BY_KEY.equalsIgnoreCase(action)) {
-                out.println("Invalid uri.(Use clearCacheByCategory or clearCacheByKey)");
+            if (!REQ_CLEAR_BY_CATEGORY.equalsIgnoreCase(action) && !REQ_CLEAR_BY_KEY.equalsIgnoreCase(action)
+                    && !REQ_INC_CATEGORY_VERSION.equalsIgnoreCase(action)
+                    && !REQ_PUSH_CATEGORY_CONFIG.equalsIgnoreCase(action)) {
+                out
+                        .println("Invalid uri.(Use clearCacheByCategory, clearCacheByKey, incCacheCategoryVersion or pushCacheCategoryConfig)");
             }
 
             if (REQ_CLEAR_BY_CATEGORY.equalsIgnoreCase(action)) {
                 cacheManageService.clearByCategory(req.getParameter(PARAM_CATEGORY), req.getParameter(PARAM_IPS));
-            } else {
+            } else if (REQ_CLEAR_BY_KEY.equalsIgnoreCase(action)) {
                 cacheManageService.clearByKey(req.getParameter(PARAM_CACHETYPE), req.getParameter(PARAM_KEY));
+            } else if (REQ_INC_CATEGORY_VERSION.equalsIgnoreCase(action)) {
+                cacheManageService.incVersion(req.getParameter(PARAM_CATEGORY));
+            } else {
+                cacheManageService.pushCategoryConfig(req.getParameter(PARAM_CATEGORY), req.getParameter(PARAM_IPS));
             }
 
             out.println("OK");

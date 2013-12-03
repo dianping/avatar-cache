@@ -62,5 +62,9 @@ public interface CacheManageWebService {
      * @param serverOrGroup
      */
     void clearByCategory(String category, String serverOrGroup);
+    
+    void incVersion(String category);
+    
+    void pushCategoryConfig(String category, String serverOrGroup);
 	
 }
