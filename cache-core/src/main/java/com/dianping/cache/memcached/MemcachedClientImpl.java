@@ -171,6 +171,7 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 timeoutException = e;
                 result = null;
             } catch (Exception e) {
+            	 future.cancel(true);
                 result = null;
             }
         }
@@ -187,6 +188,7 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 timeoutException = e;
                 result = null;
             } catch (Exception e1) {
+            	 future.cancel(true);
                 result = null;
             }
         }
@@ -241,6 +243,7 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 timeoutException = e;
                 result = null;
             } catch (Exception e) {
+            	 future.cancel(true);
                 result = null;
             }
         }
@@ -448,17 +451,15 @@ public class MemcachedClientImpl implements CacheClient, Lifecycle, KeyAware, In
                 Boolean locked = null;
                 try {
                     locked = future.get(getGetTimeout(), TimeUnit.MILLISECONDS);
-                } catch(TimeoutException te) {
+                } catch(Exception e) {
                	  future.cancel(true);
-                } catch (Exception e) {
                 }
 
                 if (backupFuture != null && locked == null) {
                     try {
                         locked = backupFuture.get(getGetTimeout(), TimeUnit.MILLISECONDS);
-                    }catch(TimeoutException te) {
-                  	   backupFuture.cancel(true);
                     } catch (Exception e) {
+                  	  backupFuture.cancel(true);
                     }
                 }
 
