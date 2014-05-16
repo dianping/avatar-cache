@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>com.dianping.dpsf</groupId>
 			<artifactId>dpsf-net</artifactId>
-			<version>1.6.3.5</version>
+			<version>1.9.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.dianping</groupId>

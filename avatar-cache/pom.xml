@@ -7,7 +7,7 @@
 		<version>2.4.2</version>
 	</parent>
 	<artifactId>avatar-cache</artifactId>
-	<name>Avatar cache</name>
+	<name>avatar-cache</name>
 
 	<dependencies>
 		<dependency>
@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>com.dianping.dpsf</groupId>
 			<artifactId>dpsf-net</artifactId>
-			<version>1.4.5</version>
+			<version>1.9.8</version>
 		</dependency>
 	</dependencies>
 </project>

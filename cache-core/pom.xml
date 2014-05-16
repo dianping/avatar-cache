@@ -11,7 +11,7 @@
 	<artifactId>cache-core</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Avatar cache core</name>
+	<name>cache-core</name>
 	<url>http://maven.apache.org</url>
 
 	<dependencies>
